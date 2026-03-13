@@ -1,10 +1,6 @@
 package io.github.anodoze.mathwords
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -14,25 +10,31 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun WrongAnswer(state: QuizState.Wrong) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
         Text(
-            text = "${state.card.operandA} ${state.card.operation.symbol()} ${state.card.operandB}",
-            style = MaterialTheme.typography.displayLarge
+            text = state.card.operation.title(),
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.align(Alignment.TopCenter).padding(top = 24.dp)
         )
-        Spacer(modifier = Modifier.height(32.dp))
-        Text(
-            text = "${state.correctAnswer}",
-            style = MaterialTheme.typography.displayMedium,
-            color = MaterialTheme.colorScheme.error
-        )
-        Spacer(modifier = Modifier.height(16.dp))
+        Column(
+            modifier = Modifier.align(Alignment.Center),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "${state.card.operandA} ${state.card.operation.symbol()} ${state.card.operandB}",
+                style = MaterialTheme.typography.displayLarge
+            )
+            Spacer(modifier = Modifier.height(32.dp))
+            Text(
+                text = "${state.correctAnswer}",
+                style = MaterialTheme.typography.displayMedium,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
         Text(
             text = "press # to continue",
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 48.dp)
         )
     }
 }
