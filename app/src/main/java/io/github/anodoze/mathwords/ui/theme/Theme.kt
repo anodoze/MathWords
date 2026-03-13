@@ -1,22 +1,17 @@
 package io.github.anodoze.mathwords.ui.theme
 
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.unit.dp
 
 private val AppColorScheme = darkColorScheme(
-    primary = AccentViolet,
+    primary = Highlight,
     onPrimary = TextPrimary,
-    secondary = AccentLight,
-    onSecondary = TextPrimary,
-    background = DeepPurple,
+    background = Background,
     onBackground = TextPrimary,
-    surface = SurfacePurple,
+    surface = Box,
     onSurface = TextPrimary,
-    error = ErrorRed,
+    error = TextError,
     onError = TextPrimary
 )
 

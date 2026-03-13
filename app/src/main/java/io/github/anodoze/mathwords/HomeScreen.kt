@@ -1,10 +1,13 @@
 package io.github.anodoze.mathwords
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -26,11 +29,17 @@ fun HomeScreen(onOperationSelected: (Operation) -> Unit) {
                     if (op != null) {
                         AppButton(
                             onClick = { onOperationSelected(op) },
-                            modifier = Modifier.weight(1f).height(100.dp)
+                            modifier = Modifier.weight(1f).height(100.dp),
+                            contentPadding = PaddingValues(2.dp)
                         ) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text(op.title(), style = MaterialTheme.typography.bodyMedium)
-                                Text(op.symbol(), fontSize = 28.sp, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+                                Text(
+                                    text = op.title(),
+                                    maxLines = 1,
+                                    autoSize = TextAutoSize.StepBased(maxFontSize = 16.sp),
+                                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                                )
+                                Text(op.symbol(), fontSize = 28.sp, fontWeight = FontWeight.Bold)
                             }
                         }
                     } else {

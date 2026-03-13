@@ -19,10 +19,10 @@ val Typography = Typography(
     titleMedium = TextStyle(
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
-        color = TextSecondary
+        color = TextAccent
     ),
     bodyMedium = TextStyle(
         fontSize = 14.sp,
-        color = TextSecondary
+        color = TextAccent
     )
 )
