@@ -6,6 +6,7 @@
 /.idea/assetWizardSettings.xml
 .DS_Store
 local.properties
+mathwords_context.txt
 
 # Gradle files
 .gradle/
