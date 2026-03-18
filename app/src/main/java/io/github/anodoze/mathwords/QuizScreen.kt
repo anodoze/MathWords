@@ -42,8 +42,8 @@ fun QuizScreen(viewModel: QuizViewModel, onBack: () -> Unit) {
         }
     ) {
         when (val s = state) {
-            is QuizState.Awaiting -> AwaitingInput(s)
-            is QuizState.Wrong -> WrongAnswer(s)
+            is QuizState.Awaiting -> AwaitingInput(s, viewModel.decimalPrecision)
+            is QuizState.Wrong -> WrongAnswer(s, viewModel.decimalPrecision)
             is QuizState.Loading -> CircularProgressIndicator()
         }
     }

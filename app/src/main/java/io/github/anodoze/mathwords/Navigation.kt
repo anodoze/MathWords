@@ -30,7 +30,7 @@ fun MathWordsApp(database: MathWordsDatabase, settings: UserSettings) {
                     passingThresholdMs = settings.passingThresholdMs,
                     maxWeakCards = settings.maxWeakCards
                 ),
-                confirmKey = settings.confirmKey
+                settings = settings
             )
             val viewModel: QuizViewModel = viewModel(
                 key = selectedOperation.name,

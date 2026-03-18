@@ -10,7 +10,7 @@ interface CardDao {
     @Query("SELECT * FROM cards WHERE isIntroduced = 1 AND operation = :op ORDER BY rollingAvgMs DESC")
     suspend fun getIntroducedCardsByWeakness(op: Operation): List<Card>
 
-    @Query("SELECT * FROM cards WHERE isIntroduced = 0 AND operation = :op LIMIT :limit")
+    @Query("SELECT * FROM cards WHERE isIntroduced = 0 AND operation = :op ORDER BY introducedOrder ASC LIMIT :limit")
     suspend fun getUnintroducedCards(op: Operation, limit: Int): List<Card>
 
     @Query("SELECT * FROM cards WHERE isIntroduced = 1 AND operation = :op AND lastAskedAt + reviewIntervalMs < :now")

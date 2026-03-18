@@ -11,9 +11,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
+import kotlin.math.pow
 
 @Composable
-fun AwaitingInput(state: QuizState.Awaiting) {
+fun AwaitingInput(state: QuizState.Awaiting, decimalPrecision: Int) {
     val isNegative = state.card.correctAnswer() < 0
     var cursorVisible by remember { mutableStateOf(true) }
 
@@ -27,7 +28,12 @@ fun AwaitingInput(state: QuizState.Awaiting) {
     val cursor = if (cursorVisible) "|" else " "
     val displayInput = when {
         state.input.isEmpty() -> if (isNegative) "-$cursor" else cursor
-        else -> if (isNegative) "-${state.input}$cursor" else "${state.input}$cursor"
+        else -> {
+            val factor = 10f.pow(decimalPrecision)
+            val formatted = (state.input.toLongOrNull() ?: 0L) / factor
+            "%.${decimalPrecision}f".format(formatted)
+                .let { if (isNegative) "-$it$cursor" else "$it$cursor" }
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {

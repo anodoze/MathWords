@@ -10,13 +10,16 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlin.math.pow
+import kotlin.math.roundToInt
 
 class QuizViewModel(
     private val scheduler: Scheduler,
-    private val confirmKey: Char = '#',
+    private val settings: UserSettings,
 ) : ViewModel() {
     private val _state = MutableStateFlow<QuizState>(QuizState.Loading)
     val state: StateFlow<QuizState> = _state
+    val decimalPrecision: Int get() = settings.decimalPrecision
 
     init {
         viewModelScope.launch { nextCard() }
@@ -39,8 +42,8 @@ class QuizViewModel(
             else -> null
         }
 
-        val isConfirm = event.key == Key(if (confirmKey == '#') 18 else 17)
-        val isBackspace = event.key == Key(if (confirmKey == '#') 17 else 18)
+        val isConfirm = event.key == Key(if (settings.confirmKey == '#') 18 else 17)
+        val isBackspace = event.key == Key(if (settings.confirmKey == '#') 17 else 18)
 
         when (val s = _state.value) {
             is QuizState.Awaiting -> when {
@@ -59,10 +62,11 @@ class QuizViewModel(
 
     private var cardShownAt: Long = 0L
     private fun submit(state: QuizState.Awaiting) {
-        val raw = state.input.toIntOrNull() ?: return
-        val answer = if (state.card.correctAnswer() < 0) -raw else raw
+        val raw = state.input.toLongOrNull() ?: return
+        val factor = 10f.pow(settings.decimalPrecision)
+        val answer = raw / factor * if (state.card.correctAnswer() < 0) -1 else 1
         val correct = state.card.correctAnswer()
-        val isCorrect = answer == correct
+        val isCorrect = (answer * factor).roundToInt() == (correct * factor).roundToInt()
         val responseTimeMs = System.currentTimeMillis() - cardShownAt
         viewModelScope.launch {
             scheduler.recordAnswer(state.card, responseTimeMs, isCorrect)

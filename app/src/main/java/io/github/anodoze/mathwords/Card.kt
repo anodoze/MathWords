@@ -12,13 +12,14 @@ data class Card(
     val rollingAvgMs: Float = 0f,
     val lastAskedAt: Long = 0L,       // epoch ms
     val reviewIntervalMs: Long = 0L,
-    val isIntroduced: Boolean = false
+    val isIntroduced: Boolean = false,
+    val introducedOrder: Int = 0
 )
 
-fun Card.correctAnswer(): Int = when (operation) {
-    Operation.ADD -> operandA + operandB
-    Operation.SUBTRACT -> operandA - operandB
-    Operation.MULTIPLY -> operandA * operandB
-    Operation.DIVIDE -> operandA / operandB
+fun Card.correctAnswer(): Float = when (operation) {
+    Operation.ADD -> (operandA + operandB).toFloat()
+    Operation.SUBTRACT -> (operandA - operandB).toFloat()
+    Operation.MULTIPLY -> (operandA * operandB).toFloat()
+    Operation.DIVIDE -> operandA.toFloat() / operandB.toFloat()
 }
 

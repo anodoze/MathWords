@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun WrongAnswer(state: QuizState.Wrong) {
+fun WrongAnswer(state: QuizState.Wrong, decimalPrecision: Int) {
     Box(modifier = Modifier.fillMaxSize()) {
         Text(
             text = state.card.operation.title(),
@@ -26,7 +26,7 @@ fun WrongAnswer(state: QuizState.Wrong) {
             )
             Spacer(modifier = Modifier.height(32.dp))
             Text(
-                text = "${state.correctAnswer}",
+                text = "%.${decimalPrecision}f".format(state.correctAnswer),
                 style = MaterialTheme.typography.displayMedium,
                 color = MaterialTheme.colorScheme.error
             )

@@ -1,5 +1,6 @@
 package io.github.anodoze.mathwords
 
+import android.util.Log
 import kotlin.math.pow
 
 // Scheduler.kt
@@ -15,21 +16,22 @@ class Scheduler(
     suspend fun nextCard(): Card? {
         val now = System.currentTimeMillis()
 
-        // 1. Due for review
         val due = cardDao.getCardsDueForReview(operation, now)
+        Log.d("Scheduler", "[$operation] due: ${due.size}")
         if (due.isNotEmpty()) return due.minByOrNull { it.rollingAvgMs }
 
-        // 2. Weak cards
         val weak = cardDao.getIntroducedCardsByWeakness(operation)
             .filter { it.rollingAvgMs > passingThresholdMs }
-        if (weak.size >= maxWeakCards) return weak.first() // already sorted by weakness
+        Log.d("Scheduler", "[$operation] weak: ${weak.size}")
+        if (weak.size >= maxWeakCards) return weak.first()
 
-        // 3. Introduce a new card if weak pool has room
         val new = cardDao.getUnintroducedCards(operation, 1).firstOrNull()
+        Log.d("Scheduler", "[$operation] new: $new")
         if (new != null) return new
 
-        // 4. Fallback
-        return weak.firstOrNull()
+        val fallback = weak.firstOrNull()
+        Log.d("Scheduler", "[$operation] fallback: $fallback")
+        return fallback
     }
 
     suspend fun recordAnswer(card: Card, responseTimeMs: Long, isCorrect: Boolean) {
