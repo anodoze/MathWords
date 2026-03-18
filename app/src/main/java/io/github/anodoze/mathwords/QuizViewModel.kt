@@ -1,5 +1,6 @@
 package io.github.anodoze.mathwords
 
+import android.util.Log
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.KeyEventType
@@ -62,11 +63,19 @@ class QuizViewModel(
 
     private var cardShownAt: Long = 0L
     private fun submit(state: QuizState.Awaiting) {
-        val raw = state.input.toLongOrNull() ?: return
-        val factor = 10f.pow(settings.decimalPrecision)
-        val answer = raw / factor * if (state.card.correctAnswer() < 0) -1 else 1
+//        val raw = state.input.toLongOrNull() ?: return
+//        val factor = 10f.pow(settings.decimalPrecision)
         val correct = state.card.correctAnswer()
-        val isCorrect = (answer * factor).roundToInt() == (correct * factor).roundToInt()
+        val answer = if (state.card.operation == Operation.DIVIDE) {
+            val raw = state.input.toLongOrNull() ?: return
+            raw / 10f.pow(settings.decimalPrecision) * if (correct < 0) -1 else 1
+        } else {
+            val raw = state.input.toIntOrNull() ?: return
+            if (correct < 0) -raw.toFloat() else raw.toFloat()
+        }
+        Log.d("Submit", "input: ${state.input}, correct: $correct, answer: $answer")
+        val isCorrect = "%.${settings.decimalPrecision}f".format(correct) ==
+                "%.${settings.decimalPrecision}f".format(answer)
         val responseTimeMs = System.currentTimeMillis() - cardShownAt
         viewModelScope.launch {
             scheduler.recordAnswer(state.card, responseTimeMs, isCorrect)
