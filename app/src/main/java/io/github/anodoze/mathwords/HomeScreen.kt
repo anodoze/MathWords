@@ -12,9 +12,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun HomeScreen(onOperationSelected: (Operation) -> Unit) {
+fun HomeScreen(onOperationSelected: (Operation) -> Unit, onSettingsSelected: () -> Unit) {
     val ops = Operation.entries
-//    val ops = Operation.entries + listOf(null) use if odd # of operations
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.Center,
@@ -48,6 +47,13 @@ fun HomeScreen(onOperationSelected: (Operation) -> Unit) {
                 }
             }
             Spacer(modifier = Modifier.height(12.dp))
+        }
+        Spacer(modifier = Modifier.height(12.dp))
+        AppButton(
+            onClick = onSettingsSelected,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Settings")
         }
     }
 }

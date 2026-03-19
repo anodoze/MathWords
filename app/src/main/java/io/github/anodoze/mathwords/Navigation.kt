@@ -7,10 +7,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 
-enum class Screen { HOME, QUIZ }
+enum class Screen { HOME, QUIZ, SETTINGS }
 
 @Composable
-fun MathWordsApp(database: MathWordsDatabase, settings: UserSettings) {
+fun MathWordsApp(database: MathWordsDatabase, settings: UserSettings, onSaveSettings: (UserSettings) -> Unit) {
     var currentScreen by remember { mutableStateOf(Screen.HOME) }
     var selectedOperation by remember { mutableStateOf(Operation.ADD) }
 
@@ -19,7 +19,8 @@ fun MathWordsApp(database: MathWordsDatabase, settings: UserSettings) {
             onOperationSelected = {
                 selectedOperation = it
                 currentScreen = Screen.QUIZ
-            }
+            },
+            onSettingsSelected = { currentScreen = Screen.SETTINGS }
         )
         Screen.QUIZ -> {
             val factory = QuizViewModelFactory(
@@ -41,5 +42,10 @@ fun MathWordsApp(database: MathWordsDatabase, settings: UserSettings) {
                 onBack = { currentScreen = Screen.HOME }
             )
         }
+        Screen.SETTINGS -> SettingsScreen(
+            settings = settings,
+            onSave = onSaveSettings,
+            onBack = { currentScreen = Screen.HOME }
+        )
     }
 }

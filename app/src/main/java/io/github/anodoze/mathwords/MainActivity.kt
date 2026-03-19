@@ -25,7 +25,8 @@ class MainActivity : ComponentActivity() {
                     Box(modifier = Modifier.padding(innerPadding)) {
                         MathWordsApp(
                             database = database,
-                            settings = UserSettings()
+                            settings = (application as MathWordsApplication).userSettings,
+                            onSaveSettings = { (application as MathWordsApplication).saveSettings(it) }
                         )
                     }
                 }

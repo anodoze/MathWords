@@ -4,23 +4,24 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 
-private val AppColorScheme = darkColorScheme(
+private val ColorScheme = darkColorScheme(
     primary = Highlight,
     onPrimary = TextPrimary,
     background = Background,
+    surface = Background,
     onBackground = TextPrimary,
-    surface = Box,
     onSurface = TextPrimary,
+    onSurfaceVariant = TextAccent,
     error = TextError,
-    onError = TextPrimary
+    onError = TextPrimary,
+    surfaceVariant = Box,
+    onErrorContainer = TextError
 )
 
 @Composable
 fun MathWordsTheme(content: @Composable () -> Unit) {
     MaterialTheme(
-        colorScheme = AppColorScheme,
-        typography = Typography,
-        shapes = Shapes,
+        colorScheme = ColorScheme,
         content = content
     )
 }

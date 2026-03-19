@@ -11,41 +11,32 @@ SRS-based mental arithmetic trainer. Models common operations as "vocabulary" to
 - Build: AGP 9.1.0, KSP 2.2.10-2.0.2
 - Package: io.github.anodoze.mathwords
 
-## Current State
-- Data layer complete (Card, Answer, Converters, Database, DAOs)
-- Scheduler written
-- HomeScreen and QuizScreen composables written
-- Seeder written (excludes DIVIDE for now)
+## App Structure
+- Home Screen
+  - choose from available operations to practice, or go to Settings
+  - "back" button returns to home screen from any sub-screen
 
-## Known Issues / TODOs
-- KSP/AGP warning suppressed via `android.disallowKotlinSourceSets=false` in gradle.properties
-- Live Edit error on launch (cosmetic, AGP 9.x bug)
-- Division cards excluded pending design decision on non-integer results
-- Schedule "fuzz" not yet implemented (small random multiplier on reviewIntervalMs)
-- UserSettings hardcoded, needs persistent storage and UI
-- No settings screen yet
-- Progress matrix screen not yet built
-
-## Core Design Decisions
+## Core Features
+- 4 operations currently tracked
+  - Addition
+  - Subtraction
+  - Multiplication
+  - Division
 - Ordered pairs tracked separately (8+13 ≠ 13+8)
-- 0-99 for both operands, 4 operations (DIVIDE excluded for now)
-- Wrong answers inject `passingThresholdMs * 5` as synthetic response time into rolling average
-- Weighted rolling average with decay factor 0.9, window of last 20 answers
+- 0-99 for both operands
+- Wrong answers inject `passingThresholdMs * 5` as synthetic response time into rolling average - this was a placeholder, we should put more thought into the exact interval
+- Weighted rolling average with decay factor 0.9, window of last 20 answers - possibly shorten window?
 - New cards introduced when weak card count drops below maxWeakCards
 - Review interval scales with speed: ratio of (passingThreshold / rollingAvg) in days
 - Review interval clamped: floor 4hrs, ceiling 180 days
-- Confirm key (* or #) user-configurable, other key = backspace
+- UserSettings persistent via SharedPreferences
+- centered around T12 keyboard navigation
 
-## Next Up
-- Handle decimal input (ATM-style)
-- Design decisions for decimals
-  - division and other operations will need decimal storage/input
-  - user-configurable precision level
-  - decide how to handle repeating (3.3333...) type answers - round or cut off?
-- Persistent UserSettings
-- Handle extended pauses (max answer length)
-  - user configurable
-  - do we need special handling for exiting the app and returning?
-- Settings screen
-- Progress matrix screen
-- Schedule fuzz
+## Known Issues
+- KSP/AGP warning suppressed via `android.disallowKotlinSourceSets=false` in gradle.properties
+- Live Edit error on launch (cosmetic, AGP 9.x bug)
+
+## TODO
+- Schedule "fuzz" - separate closely-related cards by fuzzing the review intervals
+- Progress matrix - display how much the user has progressed with graphic on home screen
+- handle extended pauses (max answer length - multiplier of passingThreshold? consider alongside wrong answer time penalty)
