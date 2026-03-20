@@ -20,7 +20,7 @@ class QuizViewModel(
 ) : ViewModel() {
     private val _state = MutableStateFlow<QuizState>(QuizState.Loading)
     val state: StateFlow<QuizState> = _state
-    val decimalPrecision: Int get() = settings.decimalPrecision
+    val sigFigs: Int get() = settings.sigFigs
 
     init {
         viewModelScope.launch { nextCard() }
@@ -49,6 +49,10 @@ class QuizViewModel(
         when (val s = _state.value) {
             is QuizState.Awaiting -> when {
                 digit != null -> _state.value = s.copy(input = s.input + digit)
+                event.key == Key.DirectionDown -> {
+                    if (s.card.operation == Operation.DIVIDE && !s.input.contains('.'))
+                        _state.value = s.copy(input = s.input + ".")
+                }
                 isBackspace -> _state.value = s.copy(input = s.input.dropLast(1))
                 isConfirm -> submit(s)
                 else -> return false
@@ -62,26 +66,33 @@ class QuizViewModel(
     }
 
     private var cardShownAt: Long = 0L
+
     private fun submit(state: QuizState.Awaiting) {
-//        val raw = state.input.toLongOrNull() ?: return
-//        val factor = 10f.pow(settings.decimalPrecision)
         val correct = state.card.correctAnswer()
         val answer = if (state.card.operation == Operation.DIVIDE) {
-            val raw = state.input.toLongOrNull() ?: return
-            raw / 10f.pow(settings.decimalPrecision) * if (correct < 0) -1 else 1
+            state.input.toFloatOrNull() ?: return
         } else {
-            val raw = state.input.toIntOrNull() ?: return
-            if (correct < 0) -raw.toFloat() else raw.toFloat()
+            state.input.toIntOrNull()?.toFloat() ?: return
         }
-        Log.d("Submit", "input: ${state.input}, correct: $correct, answer: $answer")
-        val isCorrect = "%.${settings.decimalPrecision}f".format(correct) ==
-                "%.${settings.decimalPrecision}f".format(answer)
+        val isCorrect = if (state.card.operation == Operation.DIVIDE) {
+            withinSigFigTolerance(answer, correct, settings.sigFigs)
+        } else {
+            answer == correct
+        }
+        Log.d("Submit", "input: ${state.input}, correct: $correct, answer: $answer, isCorrect: $isCorrect")
         val responseTimeMs = System.currentTimeMillis() - cardShownAt
         viewModelScope.launch {
             scheduler.recordAnswer(state.card, responseTimeMs, isCorrect)
             if (isCorrect) nextCard()
             else _state.value = QuizState.Wrong(state.card, correct)
         }
+    }
+
+    private fun withinSigFigTolerance(answer: Float, correct: Float, sigFigs: Int): Boolean {
+        if (correct == 0f) return answer == 0f
+        val magnitude = kotlin.math.floor(kotlin.math.log10(kotlin.math.abs(correct))).toInt()
+        val epsilon = 0.5 * 10.0.pow(magnitude - (sigFigs - 1))
+        return kotlin.math.abs(answer - correct) < epsilon
     }
 
     private suspend fun nextCard() {

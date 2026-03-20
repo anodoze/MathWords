@@ -1,6 +1,5 @@
 package io.github.anodoze.mathwords
 
-import androidx.compose.animation.core.*
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,19 +14,10 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
-import kotlin.math.pow
 
 @Composable
-fun AwaitingInput(state: QuizState.Awaiting, decimalPrecision: Int) {
-    if (state.card.operation == Operation.DIVIDE)
-        DecimalInput(state, decimalPrecision)
-    else
-        IntegerInput(state)
-}
-
-@Composable
-fun IntegerInput(state: QuizState.Awaiting) {
-    val isNegative = state.card.correctAnswer() < 0
+fun AwaitingInput(state: QuizState.Awaiting, sigFigs: Int) {
+    val isDecimal = state.card.operation == Operation.DIVIDE
     var cursorVisible by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
@@ -38,61 +28,24 @@ fun IntegerInput(state: QuizState.Awaiting) {
     }
 
     val cursor = if (cursorVisible) "|" else " "
-    val displayInput = buildAnnotatedString {
-        append(when {
-            state.input.isEmpty() -> if (isNegative) "-$cursor" else cursor
-            else -> if (isNegative) "-${state.input}$cursor" else "${state.input}$cursor"
-        })
-    }
-
-    InputBox(state, displayInput)
-}
-
-@Composable
-fun DecimalInput(state: QuizState.Awaiting, decimalPrecision: Int) {
-    val isNegative = state.card.correctAnswer() < 0
-    var cursorVisible by remember { mutableStateOf(true) }
-
-    val ghostColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+    val correct = state.card.correctAnswer()
     val primaryColor = MaterialTheme.colorScheme.onSurface
 
-    LaunchedEffect(Unit) {
-        while (true) {
-            delay(500)
-            cursorVisible = !cursorVisible
-        }
-    }
-
-    val cursor = if (cursorVisible) "|" else " "
-    val ghost = "0.${"0".repeat(decimalPrecision)}"
-    val displayInput = when {
-        state.input.isEmpty() -> buildAnnotatedString {
-            if (isNegative) append("-")
-            withStyle(SpanStyle(color = ghostColor)) { append(ghost) }
-            withStyle(SpanStyle(color = primaryColor)) { append(cursor) }
-        }
-        else -> buildAnnotatedString {
-            val formatted = formatDecimalDisplay(state.input, decimalPrecision)
-            if (isNegative) append("-")
-            if (state.input.length > decimalPrecision) {
-                append(formatted)
-            } else {
-                val splitIndex = formatted.length - state.input.length
-                withStyle(SpanStyle(color = ghostColor)) { append(formatted.take(splitIndex)) }
-                append(formatted.drop(splitIndex))
-            }
-            withStyle(SpanStyle(color = primaryColor)) { append(cursor) }
-        }
+    val displayInput = buildAnnotatedString {
+        if (correct < 0) append("-")
+        append(state.input)
+        withStyle(SpanStyle(color = primaryColor)) { append(cursor) }
     }
 
     InputBox(state, displayInput)
 }
 
-fun formatDecimalDisplay(input: String, decimalPrecision: Int): String {
-    val padded = input.padStart(decimalPrecision, '0')
-    val intPart = padded.dropLast(decimalPrecision).ifEmpty { "0" }
-    val decPart = padded.takeLast(decimalPrecision)
-    return "$intPart.$decPart"
+fun ghostPlaceholder(correct: Float, sigFigs: Int): String {
+    if (correct == 0f) return "0"
+    val magnitude = kotlin.math.floor(kotlin.math.log10(kotlin.math.abs(correct))).toInt()
+    val decimalPlaces = (sigFigs - 1 - magnitude).coerceAtLeast(0)
+    return if (decimalPlaces == 0) "0"
+    else "0.${"0".repeat(decimalPlaces)}"
 }
 
 @Composable

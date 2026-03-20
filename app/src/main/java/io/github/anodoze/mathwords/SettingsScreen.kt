@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
 
-enum class SettingsField { THRESHOLD, MAX_WEAK, PRECISION, CONFIRM_KEY, SAVE }
+enum class SettingsField { THRESHOLD, MAX_WEAK, SIG_FIGS, CONFIRM_KEY, SAVE }
 
 @Composable
 fun SettingsScreen(
@@ -30,7 +30,7 @@ fun SettingsScreen(
         (settings.passingThresholdMs / 10f).toInt().toString()
     )}
     var maxWeakInput by remember { mutableStateOf(settings.maxWeakCards.toString()) }
-    var precisionInput by remember { mutableStateOf(settings.decimalPrecision.toString()) }
+    var sigFigsInput by remember { mutableStateOf(settings.sigFigs.toString()) }
     var confirmKey by remember { mutableStateOf(settings.confirmKey) }
 
     val fields = SettingsField.entries
@@ -44,7 +44,7 @@ fun SettingsScreen(
         when (selectedField) {
             SettingsField.THRESHOLD -> thresholdInput += digit
             SettingsField.MAX_WEAK -> maxWeakInput += digit
-            SettingsField.PRECISION -> precisionInput += digit
+            SettingsField.SIG_FIGS -> sigFigsInput += digit
             else -> Unit
         }
     }
@@ -53,7 +53,7 @@ fun SettingsScreen(
         when (selectedField) {
             SettingsField.THRESHOLD -> thresholdInput = thresholdInput.dropLast(1)
             SettingsField.MAX_WEAK -> maxWeakInput = maxWeakInput.dropLast(1)
-            SettingsField.PRECISION -> precisionInput = precisionInput.dropLast(1)
+            SettingsField.SIG_FIGS -> sigFigsInput = sigFigsInput.dropLast(1)
             else -> Unit
         }
     }
@@ -64,7 +64,7 @@ fun SettingsScreen(
             passingThresholdMs = thresholdMs,
             maxWeakCards = maxWeakInput.toIntOrNull() ?: settings.maxWeakCards,
             confirmKey = confirmKey,
-            decimalPrecision = precisionInput.toIntOrNull() ?: settings.decimalPrecision
+            sigFigs = sigFigsInput.toIntOrNull() ?: settings.sigFigs
         ))
         onBack()
     }
@@ -145,9 +145,9 @@ fun SettingsScreen(
             }
             item {
                 SettingsInputField(
-                    label = "Decimal precision",
-                    input = precisionInput,
-                    isActive = selectedField == SettingsField.PRECISION,
+                    label = "Significant figures",
+                    input = sigFigsInput,
+                    isActive = selectedField == SettingsField.SIG_FIGS,
                     isDecimal = false
                 )
             }
@@ -200,8 +200,10 @@ fun SettingsInputField(
     val cursor = if (isActive && cursorVisible) "|" else " "
 
     val displayText = if (isDecimal) {
-        if (input.isEmpty()) "0.00$cursor"
-        else "${formatDecimalDisplay(input, decimalPrecision)}$cursor"
+        val padded = input.padStart(decimalPrecision, '0')
+        val intPart = padded.dropLast(decimalPrecision).ifEmpty { "0" }
+        val decPart = padded.takeLast(decimalPrecision)
+        "$intPart.$decPart$cursor"
     } else {
         if (input.isEmpty()) cursor else "$input$cursor"
     }

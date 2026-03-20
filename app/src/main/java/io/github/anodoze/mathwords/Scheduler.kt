@@ -2,6 +2,7 @@ package io.github.anodoze.mathwords
 
 import android.util.Log
 import kotlin.math.pow
+import kotlin.random.Random
 
 // Scheduler.kt
 class Scheduler(
@@ -42,7 +43,7 @@ class Scheduler(
 
         val recentAnswers = answerDao.getRecentAnswers(card.id, limit = 20)
         val newAvg = computeWeightedAverage(recentAnswers)
-        val newInterval = computeReviewInterval(newAvg)
+        val newInterval = fuzzInterval(computeReviewInterval(newAvg))
 
         cardDao.upsert(card.copy(
             rollingAvgMs = newAvg,
@@ -69,7 +70,16 @@ class Scheduler(
         val intervalMs = (ratio * 24 * 60 * 60 * 1000L).toLong() // ratio in days
         return intervalMs.coerceIn(
             4 * 60 * 60 * 1000L,    // floor: 4 hours
-            6 * 30 * 24 * 60 * 60 * 1000L // ceiling: 6 months
+            6L * 30 * 24 * 60 * 60 * 1000 // ceiling: 6 months
+        )
+    }
+
+    private fun fuzzInterval(intervalMs: Long): Long {
+        val maxFuzz = minOf(intervalMs * 0.2, 24 * 60 * 60 * 1000.0).toLong()
+        val fuzz = ((Random.nextFloat() * 2 - 1) * maxFuzz).toLong()
+        return (intervalMs + fuzz).coerceIn(
+            4 * 60 * 60 * 1000L,
+            6L * 30 * 24 * 3600 * 1000
         )
     }
 }

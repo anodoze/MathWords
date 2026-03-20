@@ -27,7 +27,7 @@ class MathWordsApplication : Application() {
         if (!prefs.getBoolean("seeded", false)) {
             CoroutineScope(Dispatchers.IO).launch {
                 DatabaseSeeder.seed(database)
-                if (BuildConfig.DEBUG) FakeProgressSeeder.seed(database)
+//                if (BuildConfig.DEBUG) FakeProgressSeeder.seed(database)
                 prefs.edit { putBoolean("seeded", true) }
             }
         }
