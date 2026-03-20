@@ -11,7 +11,7 @@ class Scheduler(
     private val passingThresholdMs: Float,
     private val maxWeakCards: Int,
     private val decayFactor: Float = 0.9f,
-    private val wrongAnswerPenaltyMultiplier: Float = 5f
+    private val answerWindowSize: Int = 8
 ) {
     suspend fun nextCard(): Card? {
         val now = System.currentTimeMillis()
@@ -35,12 +35,13 @@ class Scheduler(
     }
 
     suspend fun recordAnswer(card: Card, responseTimeMs: Long, isCorrect: Boolean) {
-        val effectiveTime = if (isCorrect) responseTimeMs
-        else passingThresholdMs * wrongAnswerPenaltyMultiplier
+        val effectiveTime = responseTimeMs
+            .coerceAtMost((passingThresholdMs * 8f).toLong())
 
-        answerDao.insert(Answer(cardId = card.id, responseTimeMs = effectiveTime.toLong(), isCorrect = isCorrect))
+        answerDao.insert(Answer(cardId = card.id, responseTimeMs = effectiveTime, isCorrect = isCorrect))
+        answerDao.pruneOldAnswers(card.id, limit = answerWindowSize)
 
-        val recentAnswers = answerDao.getRecentAnswers(card.id, limit = 20)
+        val recentAnswers = answerDao.getRecentAnswers(card.id, limit = 8)
         val newAvg = computeWeightedAverage(recentAnswers)
         val newInterval = fuzzInterval(computeReviewInterval(newAvg))
 
@@ -65,11 +66,12 @@ class Scheduler(
     }
 
     private fun computeReviewInterval(avgMs: Float): Long {
-        val ratio = (passingThresholdMs / avgMs.coerceAtLeast(1f))
-        val intervalMs = (ratio * 24 * 60 * 60 * 1000L).toLong() // ratio in days
+        val effectiveAvg = avgMs.coerceAtLeast(500f)
+        val ratio = passingThresholdMs / effectiveAvg
+        val intervalMs = (ratio.toDouble().pow(2.5) * 24 * 60 * 60 * 1000L).toLong()
         return intervalMs.coerceIn(
-            4 * 60 * 60 * 1000L,    // floor: 4 hours
-            6L * 30 * 24 * 60 * 60 * 1000 // ceiling: 6 months
+            4 * 60 * 60 * 1000L, // floor: 4h
+            6L * 30 * 24 * 60 * 60 * 1000 //ceil: 6mo
         )
     }
 
