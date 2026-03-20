@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun WrongAnswer(state: QuizState.Wrong, sigFigs: Int) {
+fun WrongAnswer(state: QuizState.Wrong, sigFigs: Int, confirmKey: Char) {
     val decimalPlaces = if (state.correctAnswer == 0f) 0
     else {
         val magnitude = kotlin.math.floor(kotlin.math.log10(kotlin.math.abs(state.correctAnswer))).toInt()
@@ -37,7 +37,7 @@ fun WrongAnswer(state: QuizState.Wrong, sigFigs: Int) {
             )
         }
         Text(
-            text = "press # to continue",
+            text = "press $confirmKey to continue",
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 48.dp)
         )

@@ -28,31 +28,27 @@ fun HomeScreen(
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 row.forEach { op ->
-                    if (op != null) {
-                        AppButton(
-                            onClick = { onOperationSelected(op) },
-                            modifier = Modifier.weight(1f),
-                            contentPadding = PaddingValues(0.dp)
+                    AppButton(
+                        onClick = { onOperationSelected(op) },
+                        modifier = Modifier.weight(1f),
+                        contentPadding = PaddingValues(0.dp)
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.fillMaxWidth()
                         ) {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = op.title(),
-                                    maxLines = 1,
-                                    modifier = Modifier.padding(vertical = 8.dp),
-                                    autoSize = TextAutoSize.StepBased(maxFontSize = 16.sp),
-                                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                                )
-                                ProgressMatrix(
-                                    cards = cardsByOperation[op] ?: emptyList(),
-                                    modifier = Modifier.fillMaxWidth().aspectRatio(1f)
-                                )
-                            }
+                            Text(
+                                text = op.title(),
+                                maxLines = 1,
+                                modifier = Modifier.padding(vertical = 8.dp),
+                                autoSize = TextAutoSize.StepBased(maxFontSize = 16.sp),
+                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                            )
+                            ProgressMatrix(
+                                cards = cardsByOperation[op] ?: emptyList(),
+                                modifier = Modifier.fillMaxWidth().aspectRatio(1f)
+                            )
                         }
-                    } else {
-                        Spacer(modifier = Modifier.weight(1f).wrapContentHeight())
                     }
                 }
             }

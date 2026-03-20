@@ -20,6 +20,7 @@ class QuizViewModel(
     private val _state = MutableStateFlow<QuizState>(QuizState.Loading)
     val state: StateFlow<QuizState> = _state
     val sigFigs: Int get() = settings.sigFigs
+    val confirmKey: Char get() = settings.confirmKey
 
     init {
         viewModelScope.launch { nextCard() }
