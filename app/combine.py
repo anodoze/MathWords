@@ -21,6 +21,7 @@ files = [
     r'app\src\main\java\io\github\anodoze\mathwords\QuizViewModel.kt',
     r'app\src\main\java\io\github\anodoze\mathwords\QuizViewModelFactory.kt',
     r'app\src\main\java\io\github\anodoze\mathwords\Scheduler.kt',
+    r'app\src\main\java\io\github\anodoze\mathwords\SettingsScreen.kt',
     r'app\src\main\java\io\github\anodoze\mathwords\UIComponents.kt',
     r'app\src\main\java\io\github\anodoze\mathwords\UserSettings.kt',
     r'app\src\main\java\io\github\anodoze\mathwords\WrongAnswer.kt',
