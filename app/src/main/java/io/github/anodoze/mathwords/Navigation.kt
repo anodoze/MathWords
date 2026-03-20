@@ -1,6 +1,7 @@
 package io.github.anodoze.mathwords
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -15,13 +16,18 @@ fun MathWordsApp(database: MathWordsDatabase, settings: UserSettings, onSaveSett
     var selectedOperation by remember { mutableStateOf(Operation.ADD) }
 
     when (currentScreen) {
-        Screen.HOME -> HomeScreen(
-            onOperationSelected = {
-                selectedOperation = it
-                currentScreen = Screen.QUIZ
-            },
-            onSettingsSelected = { currentScreen = Screen.SETTINGS }
-        )
+        Screen.HOME -> {
+            val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory(database))
+            val cardsByOp by homeViewModel.cardsByOperation.collectAsState()
+            HomeScreen(
+                cardsByOperation = cardsByOp,
+                onOperationSelected = {
+                    selectedOperation = it
+                    currentScreen = Screen.QUIZ
+                },
+                onSettingsSelected = { currentScreen = Screen.SETTINGS }
+            )
+        }
         Screen.QUIZ -> {
             val factory = QuizViewModelFactory(
                 scheduler = Scheduler(

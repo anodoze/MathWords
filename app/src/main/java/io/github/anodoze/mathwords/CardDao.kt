@@ -16,6 +16,9 @@ interface CardDao {
     @Query("SELECT * FROM cards WHERE isIntroduced = 1 AND operation = :op AND lastAskedAt + reviewIntervalMs < :now")
     suspend fun getCardsDueForReview(op: Operation, now: Long): List<Card>
 
+    @Query("SELECT * FROM cards WHERE operation = :op AND isIntroduced = 1")
+    suspend fun getIntroducedCards(op: Operation): List<Card>
+
     @Upsert
     suspend fun upsert(card: Card)
 
