@@ -4,7 +4,6 @@ import android.util.Log
 import kotlin.math.pow
 import kotlin.random.Random
 
-// Scheduler.kt
 class Scheduler(
     private val cardDao: CardDao,
     private val answerDao: AnswerDao,

@@ -16,8 +16,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 
 @Composable
-fun AwaitingInput(state: QuizState.Awaiting, sigFigs: Int) {
-    val isDecimal = state.card.operation == Operation.DIVIDE
+fun AwaitingInput(state: QuizState.Awaiting) {
     var cursorVisible by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
@@ -38,14 +37,6 @@ fun AwaitingInput(state: QuizState.Awaiting, sigFigs: Int) {
     }
 
     InputBox(state, displayInput)
-}
-
-fun ghostPlaceholder(correct: Float, sigFigs: Int): String {
-    if (correct == 0f) return "0"
-    val magnitude = kotlin.math.floor(kotlin.math.log10(kotlin.math.abs(correct))).toInt()
-    val decimalPlaces = (sigFigs - 1 - magnitude).coerceAtLeast(0)
-    return if (decimalPlaces == 0) "0"
-    else "0.${"0".repeat(decimalPlaces)}"
 }
 
 @Composable

@@ -11,6 +11,8 @@ files = [
     r'app\src\main\java\io\github\anodoze\mathwords\Converters.kt',
     r'app\src\main\java\io\github\anodoze\mathwords\DatabaseSeeder.kt',
     r'app\src\main\java\io\github\anodoze\mathwords\HomeScreen.kt',
+    r'app\src\main\java\io\github\anodoze\mathwords\HomeViewModel.kt',
+    r'app\src\main\java\io\github\anodoze\mathwords\HomeViewModelFactory.kt',
     r'app\src\main\java\io\github\anodoze\mathwords\MainActivity.kt',
     r'app\src\main\java\io\github\anodoze\mathwords\MathWordsApplication.kt',
     r'app\src\main\java\io\github\anodoze\mathwords\MathWordsDatabase.kt',

@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlin.math.pow
-import kotlin.math.roundToInt
 
 class QuizViewModel(
     private val scheduler: Scheduler,

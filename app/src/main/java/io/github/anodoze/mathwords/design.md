@@ -17,11 +17,7 @@ SRS-based mental arithmetic trainer. Models common operations as "vocabulary" to
   - "back" button returns to home screen from any sub-screen
 
 ## Core Features
-- 4 operations currently tracked
-  - Addition
-  - Subtraction
-  - Multiplication
-  - Division
+- 4 operations currently tracked: Addition, Subtraction, Multiplication, Division
 - Ordered pairs tracked separately (8+13 ≠ 13+8)
 - 0-99 for both operands
 - Wrong answers inject `passingThresholdMs * 5` as synthetic response time into rolling average - this was a placeholder, we should put more thought into the exact interval
@@ -29,14 +25,26 @@ SRS-based mental arithmetic trainer. Models common operations as "vocabulary" to
 - New cards introduced when weak card count drops below maxWeakCards
 - Review interval scales with speed: ratio of (passingThreshold / rollingAvg) in days
 - Review interval clamped: floor 4hrs, ceiling 180 days
+- Review interval fuzzed ±20% (capped at ±1 day) to prevent clustering of related cards
+- Division answers use sig-fig-based tolerance matching
+- D-pad down inserts decimal point for division input (once only)
 - UserSettings persistent via SharedPreferences
-- centered around T12 keyboard navigation
+- Centered around T12 keyboard navigation
+
+## User Settings
+- Passing threshold (seconds)
+- Max weak cards
+- Significant figures (controls division answer tolerance)
+- Confirm key (# or *)
 
 ## Known Issues
 - KSP/AGP warning suppressed via `android.disallowKotlinSourceSets=false` in gradle.properties
 - Live Edit error on launch (cosmetic, AGP 9.x bug)
 
 ## TODO
-- Schedule "fuzz" - separate closely-related cards by fuzzing the review intervals
-- Progress matrix - display how much the user has progressed with graphic on home screen
-- handle extended pauses (max answer length - multiplier of passingThreshold? consider alongside wrong answer time penalty)
+- Cleanup pass (dead code, unused functions)
+- Wrong answer penalty multiplier needs more thought (currently a placeholder)
+- Handle extended pauses (max answer length / passingThreshold multiplier)
+- APK signing and release build setup
+- Import/export (JSON serialization of cards+answers tables for data preservation across updates)
+
