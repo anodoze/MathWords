@@ -43,8 +43,8 @@ class QuizViewModel(
             else -> null
         }
 
-        val isConfirm = event.key == Key(if (settings.confirmKey == '#') 18 else 17)
-        val isBackspace = event.key == Key(if (settings.confirmKey == '#') 17 else 18)
+        val isConfirm = event.key == Key(settings.confirmKeyCode)
+        val isBackspace = event.key == Key(settings.backspaceKeyCode)
 
         when (val s = _state.value) {
             is QuizState.Awaiting -> when {
@@ -72,7 +72,8 @@ class QuizViewModel(
         val answer = if (state.card.operation == Operation.DIVIDE) {
             state.input.toFloatOrNull() ?: return
         } else {
-            state.input.toIntOrNull()?.toFloat() ?: return
+            val raw = state.input.toIntOrNull()?.toFloat() ?: return
+            if (correct < 0) -raw else raw
         }
         val isCorrect = if (state.card.operation == Operation.DIVIDE) {
             withinSigFigTolerance(answer, correct, settings.sigFigs)

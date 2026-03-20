@@ -1,5 +1,6 @@
 package io.github.anodoze.mathwords
 
+import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
@@ -13,17 +14,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.*
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
 
-enum class SettingsField { THRESHOLD, MAX_WEAK, SIG_FIGS, CONFIRM_KEY, SAVE }
+enum class SettingsField { THRESHOLD, MAX_WEAK, SIG_FIGS, CONFIRM_KEY, SAVE, EXPORT, IMPORT }
 
 @Composable
 fun SettingsScreen(
     settings: UserSettings,
     onSave: (UserSettings) -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onExport: () -> Unit,
+    onImport: () -> Unit,
 ) {
     var selectedField by remember { mutableStateOf(SettingsField.THRESHOLD) }
     var thresholdInput by remember { mutableStateOf(
@@ -36,6 +40,7 @@ fun SettingsScreen(
     val fields = SettingsField.entries
     val focusRequester = remember { FocusRequester() }
     val listState = rememberLazyListState()
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
     LaunchedEffect(selectedField) { listState.animateScrollToItem(selectedField.ordinal) }
@@ -66,13 +71,15 @@ fun SettingsScreen(
             confirmKey = confirmKey,
             sigFigs = sigFigsInput.toIntOrNull() ?: settings.sigFigs
         ))
-        onBack()
+        Toast.makeText(context, "Saved", Toast.LENGTH_SHORT).show()
     }
 
     fun handleConfirm() {
         when (selectedField) {
             SettingsField.CONFIRM_KEY -> confirmKey = if (confirmKey == '#') '*' else '#'
             SettingsField.SAVE -> handleSave()
+            SettingsField.EXPORT -> onExport()
+            SettingsField.IMPORT -> onImport()
             else -> {
                 val next = (fields.indexOf(selectedField) + 1) % fields.size
                 selectedField = fields[next]
@@ -97,9 +104,8 @@ fun SettingsScreen(
                     Key.Six -> "6"; Key.Seven -> "7"; Key.Eight -> "8"
                     Key.Nine -> "9"; else -> null
                 }
-                val isConfirm = event.key == Key(if (settings.confirmKey == '#') 18 else 17)
-                        || event.key == Key.DirectionCenter
-                val isBackspace = event.key == Key(if (settings.confirmKey == '#') 17 else 18)
+                val isConfirm = event.key == Key(settings.confirmKeyCode) || event.key == Key.DirectionCenter
+                val isBackspace = event.key == Key(settings.backspaceKeyCode)
                 when {
                     event.key == Key.DirectionDown -> {
                         val next = (fields.indexOf(selectedField) + 1) % fields.size
@@ -170,6 +176,30 @@ fun SettingsScreen(
                 ) {
                     Text("Save")
                 }
+            }
+            item {
+                AppButton(
+                    onClick = { },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (selectedField == SettingsField.EXPORT)
+                            MaterialTheme.colorScheme.primary
+                        else
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+                    )
+                ) { Text("Export") }
+            }
+            item {
+                AppButton(
+                    onClick = { },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (selectedField == SettingsField.IMPORT)
+                            MaterialTheme.colorScheme.primary
+                        else
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+                    )
+                ) { Text("Import") }
             }
             item {
                 Text(

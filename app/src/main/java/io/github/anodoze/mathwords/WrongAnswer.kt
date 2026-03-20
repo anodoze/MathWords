@@ -9,12 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun WrongAnswer(state: QuizState.Wrong, sigFigs: Int, confirmKey: Char) {
-    val decimalPlaces = if (state.correctAnswer == 0f) 0
-    else {
-        val magnitude = kotlin.math.floor(kotlin.math.log10(kotlin.math.abs(state.correctAnswer))).toInt()
-        (sigFigs - 1 - magnitude).coerceAtLeast(0)
-    }
+fun WrongAnswer(state: QuizState.Wrong, confirmKey: Char) {
     Box(modifier = Modifier.fillMaxSize()) {
         Text(
             text = state.card.operation.title(),
@@ -31,7 +26,7 @@ fun WrongAnswer(state: QuizState.Wrong, sigFigs: Int, confirmKey: Char) {
             )
             Spacer(modifier = Modifier.height(32.dp))
             Text(
-                text = "%.${decimalPlaces}f".format(state.correctAnswer),
+                text = state.correctAnswer.toBigDecimal().stripTrailingZeros().toPlainString(),
                 style = MaterialTheme.typography.displayMedium,
                 color = MaterialTheme.colorScheme.error
             )

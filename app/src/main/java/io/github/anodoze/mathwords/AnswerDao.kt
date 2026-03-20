@@ -14,4 +14,7 @@ interface AnswerDao {
 
     @Query("DELETE FROM answers WHERE cardId = :cardId AND id NOT IN (SELECT id FROM answers WHERE cardId = :cardId ORDER BY answeredAt DESC LIMIT :limit)")
     suspend fun pruneOldAnswers(cardId: Long, limit: Int)
+
+    @Query("DELETE FROM answers WHERE cardId = :cardId")
+    suspend fun deleteAnswersForCard(cardId: Long)
 }

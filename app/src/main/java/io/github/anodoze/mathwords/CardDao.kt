@@ -19,6 +19,9 @@ interface CardDao {
     @Query("SELECT * FROM cards WHERE operation = :op AND isIntroduced = 1")
     suspend fun getIntroducedCards(op: Operation): List<Card>
 
+    @Query("SELECT * FROM cards WHERE operandA = :a AND operandB = :b AND operation = :op LIMIT 1")
+    suspend fun getCardByNaturalKey(a: Int, b: Int, op: Operation): Card?
+
     @Upsert
     suspend fun upsert(card: Card)
 

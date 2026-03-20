@@ -36,3 +36,6 @@ data class UserSettings(
         }
     }
 }
+
+val UserSettings.confirmKeyCode: Int get() = if (confirmKey == '#') 18 else 17
+val UserSettings.backspaceKeyCode: Int get() = if (confirmKey == '#') 17 else 18
